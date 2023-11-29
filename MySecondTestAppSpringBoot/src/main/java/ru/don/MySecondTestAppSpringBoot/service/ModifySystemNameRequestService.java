@@ -13,6 +13,7 @@ public class ModifySystemNameRequestService implements ModifyRequestService {
     @Override
     public void modify(Request request) {
         request.setSystemName(Systems.CRM);
+        request.setSource("source_new");
         HttpEntity<Request> httpEntity = new HttpEntity<>(request);
         new RestTemplate().exchange("http://localhost:8084/feedback",
                 HttpMethod.POST,
