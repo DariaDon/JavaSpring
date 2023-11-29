@@ -11,6 +11,8 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Request {
+    private long curTime;
+
     @NotBlank
     @Size(max = 32)
     private String uid;

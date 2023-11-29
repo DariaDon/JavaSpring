@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.don.MySecondTestAppSpringBoot.exception.*;
 import ru.don.MySecondTestAppSpringBoot.model.*;
-import ru.don.MySecondTestAppSpringBoot.service.ModifyRequestService;
 import ru.don.MySecondTestAppSpringBoot.service.ValidationService;
 import ru.don.MySecondTestAppSpringBoot.service.UnsupportedCodeValidation;
 import ru.don.MySecondTestAppSpringBoot.service.ModifyResponseService;
@@ -25,17 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 public class MyController {
     private final ValidationService validationService;
     private final ModifyResponseService modifyResponseService;
-    private final ModifyRequestService modifyRequestService;
     private final UnsupportedCodeValidation unsupportedCodeValidation;
 
     @Autowired
     public MyController(ValidationService validationService, UnsupportedCodeValidation unsupportedCodeValidation,
-                        @Qualifier("ModifySystemTimeResponseService") ModifyResponseService modifyResponseService,
-                        ModifyRequestService modifyRequestService) {
+                        @Qualifier("ModifySystemTimeResponseService") ModifyResponseService modifyResponseService) {
         this.validationService = validationService;
         this.unsupportedCodeValidation = unsupportedCodeValidation;
         this.modifyResponseService = modifyResponseService;
-        this.modifyRequestService = modifyRequestService;
     }
 
     @PostMapping(value = "/feedback")
@@ -43,7 +39,6 @@ public class MyController {
                                              BindingResult bindingResult) {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
         log.info("request: {}", request);
 
         Response response = Response.builder()
@@ -91,8 +86,8 @@ public class MyController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         modifyResponseService.modify(response);
-        modifyRequestService.modify(request);
         log.info("response: {}", response);
-        return new ResponseEntity<>(modifyResponseService.modify(response), HttpStatus.OK);
+        log.info("Run-time: {} ms", System.currentTimeMillis() -  request.getCurTime());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
