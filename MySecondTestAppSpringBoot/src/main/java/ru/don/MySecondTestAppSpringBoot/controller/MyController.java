@@ -11,6 +11,7 @@ import ru.don.MySecondTestAppSpringBoot.service.ModifyRequestService;
 import ru.don.MySecondTestAppSpringBoot.service.ValidationService;
 import ru.don.MySecondTestAppSpringBoot.service.UnsupportedCodeValidation;
 import ru.don.MySecondTestAppSpringBoot.service.ModifyResponseService;
+import ru.don.MySecondTestAppSpringBoot.service.AnnualBonusServiceImpl;
 import ru.don.MySecondTestAppSpringBoot.util.DateTimeUtil;
 import org.springframework.validation.BindingResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +28,17 @@ public class MyController {
     private final ModifyResponseService modifyResponseService;
     private final ModifyRequestService modifyRequestService;
     private final UnsupportedCodeValidation unsupportedCodeValidation;
+    private final AnnualBonusServiceImpl annualBonusService;
 
     @Autowired
     public MyController(ValidationService validationService, UnsupportedCodeValidation unsupportedCodeValidation,
                         @Qualifier("ModifySystemTimeResponseService") ModifyResponseService modifyResponseService,
-                        ModifyRequestService modifyRequestService) {
+                        ModifyRequestService modifyRequestService, AnnualBonusServiceImpl annualBonusService) {
         this.validationService = validationService;
         this.unsupportedCodeValidation = unsupportedCodeValidation;
         this.modifyResponseService = modifyResponseService;
         this.modifyRequestService = modifyRequestService;
+        this.annualBonusService = annualBonusService;
     }
 
     @PostMapping(value = "/feedback")
@@ -92,6 +95,10 @@ public class MyController {
         }
         modifyResponseService.modify(response);
         modifyRequestService.modify(request);
+        Double annualBonus = annualBonusService.calculate(request.getPosition(),
+                request.getSalary(),
+                request.getBonus(),
+                request.getWorkDays());
         log.info("response: {}", response);
         return new ResponseEntity<>(modifyResponseService.modify(response), HttpStatus.OK);
     }
